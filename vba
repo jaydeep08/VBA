@@ -34,13 +34,19 @@ Sub FormatTextWithWildcard(wildcardPattern As String, textColor As Long, makeBol
                 rng.Text = ""
             Else
                 ' Apply formatting to the text inside the tags
-                If Left(rng.Text, 2) = "<<" Then
-                    rng.MoveStart wdCharacter, 2 ' Move past the opening << tag (2 characters)
-                    rng.MoveEnd wdCharacter, -2 ' Move before the closing >> tag (2 characters)
-                ElseIf Left(rng.Text, 1) = "<" Or Left(rng.Text, 1) = "[" Or Left(rng.Text, 1) = "{" Then
-                    rng.MoveStart wdCharacter, 1 ' Move past the opening tag (<, [, or {)
-                    rng.MoveEnd wdCharacter, -1 ' Move before the closing tag (>, ], or })
+                Dim tagLength As Integer
+                
+                If Left(rng.Text, 3) = "<<<" Then
+                    tagLength = 3 ' Triple tag like <<< >>>
+                ElseIf Left(rng.Text, 2) = "<<" Then
+                    tagLength = 2 ' Double tag like << >>
+                Else
+                    tagLength = 1 ' Single tag like < >, [[ ]], { }
                 End If
+
+                ' Move past the opening tag and before the closing tag
+                rng.MoveStart wdCharacter, tagLength
+                rng.MoveEnd wdCharacter, -tagLength
 
                 ' Apply color, bold, and font size if specified
                 rng.Font.Color = textColor
@@ -49,16 +55,10 @@ Sub FormatTextWithWildcard(wildcardPattern As String, textColor As Long, makeBol
                     rng.Font.Size = fontSize ' Set font size if specified
                 End If
 
-                ' After applying formatting, remove the tags if necessary
-                If Left(rng.Text, 2) = "<<" Then
-                    rng.MoveStart wdCharacter, -2 ' Move back to include opening tag <<
-                    rng.MoveEnd wdCharacter, 2 ' Extend to include closing tag >>
-                    rng.Text = rng.Text ' Reapply text without the tags
-                ElseIf Left(rng.Text, 1) = "<" Or Left(rng.Text, 1) = "[" Or Left(rng.Text, 1) = "{" Then
-                    rng.MoveStart wdCharacter, -1 ' Move back to include opening tag <, [, or {
-                    rng.MoveEnd wdCharacter, 1 ' Extend to include closing tag >, ], or }
-                    rng.Text = rng.Text ' Reapply text without the tags
-                End If
+                ' Remove the tags by adjusting the range and replacing the text
+                rng.MoveStart wdCharacter, -tagLength ' Move back to include the opening tag
+                rng.MoveEnd wdCharacter, tagLength ' Extend to include the closing tag
+                rng.Text = Mid(rng.Text, tagLength + 1, Len(rng.Text) - 2 * tagLength) ' Remove the tags
             End If
 
             rng.Collapse wdCollapseEnd
