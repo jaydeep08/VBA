@@ -1,65 +1,43 @@
 Private Sub Document_Open()
-    ' Change the color of the text between < and >
-    ChangeTextColorBetweenTags "<", ">", RGB(255, 0, 0) 'Red Color
+    ' Change the text color to blue for text between < and >
+    FormatTextBetweenTags "<", ">", RGB(0, 0, 255), False, False ' Blue Color, No Bold, No Replace
 
-    ' Bold and change the color of text between <header> and </header>
-    FormatTextBetweenTags "<header>", "</header>", RGB(0, 0, 255), True 'Blue Color and Bold
+    ' Make the text bold for text between << and >>
+    FormatTextBetweenTags "<<", ">>", RGB(0, 0, 0), True, False ' No Color Change, Bold, No Replace
 
-    ' Hide the text between <height> and </height>
-    HideTextBetweenTags "<height>", "</height>"
+    ' Hide the text and the tags between <<< and >>>
+    FormatTextBetweenTags "<<<", ">>>", RGB(0, 0, 0), False, True ' No Color Change, No Bold, Replace with Blank
 End Sub
 
-Sub ChangeTextColorBetweenTags(startTag As String, endTag As String, textColor As Long)
+' Function to format the text between specific tags
+Sub FormatTextBetweenTags(startTag As String, endTag As String, textColor As Long, makeBold As Boolean, replaceWithBlank As Boolean)
     Dim rng As Range
     Set rng = ActiveDocument.Content
 
     With rng.Find
-        .Text = startTag & "*" & endTag
+        ' Search for the pattern with wildcards
+        .Text = startTag & "[!<>]@" & endTag
         .MatchWildcards = True
 
         Do While .Execute
-            rng.Font.Color = textColor
-            rng.Collapse wdCollapseEnd
-        Loop
-    End With
-End Sub
+            ' Set the range to modify the text
+            Set rng = rng.Duplicate
 
-Sub FormatTextBetweenTags(startTag As String, endTag As String, textColor As Long, makeBold As Boolean)
-    Dim rng As Range
-    Set rng = ActiveDocument.Content
+            ' Expand the range to include the tags
+            rng.MoveStart wdCharacter, 0
+            rng.MoveEnd wdCharacter, 0
 
-    With rng.Find
-        .Text = startTag & "*" & endTag
-        .MatchWildcards = True
+            If replaceWithBlank Then
+                ' Replace both the tags and the content inside with a blank
+                rng.Text = ""
+            Else
+                ' Apply formatting if not replacing the text
+                rng.MoveStart wdCharacter, Len(startTag)
+                rng.MoveEnd wdCharacter, -Len(endTag)
+                rng.Font.Color = textColor
+                rng.Font.Bold = makeBold
+            End If
 
-        Do While .Execute
-            ' Remove the start and end tags
-            rng.Text = Replace(rng.Text, startTag, "")
-            rng.Text = Replace(rng.Text, endTag, "")
-            
-            ' Apply formatting
-            rng.Font.Color = textColor
-            rng.Font.Bold = makeBold
-            rng.Collapse wdCollapseEnd
-        Loop
-    End With
-End Sub
-
-Sub HideTextBetweenTags(startTag As String, endTag As String)
-    Dim rng As Range
-    Set rng = ActiveDocument.Content
-
-    With rng.Find
-        .Text = startTag & "*" & endTag
-        .MatchWildcards = True
-
-        Do While .Execute
-            ' Remove the start and end tags
-            rng.Text = Replace(rng.Text, startTag, "")
-            rng.Text = Replace(rng.Text, endTag, "")
-            
-            ' Hide the text
-            rng.Font.Hidden = True
             rng.Collapse wdCollapseEnd
         Loop
     End With
