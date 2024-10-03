@@ -1,67 +1,57 @@
-Private Sub Document_Open()
-    ' Change the text color to blue for text between < and >
-    FormatTextWithWildcard "\<*\>", RGB(0, 0, 255), False, False, 0 ' Blue Color, No Bold, No Replace, No Font Size Change
+// Function to extract the file name from a URL with extension verification for Microsoft environment
+const extractFileNameFromLink = (url) => {
+  try {
+    // Create a new URL object
+    const link = new URL(url);
 
-    ' Make the text red, bold, increase size, and remove tags for text between << and >>
-    FormatTextWithWildcard "\<\<*\>\>", RGB(255, 0, 0), True, False, 14 ' Red Color, Bold, Remove Tags, Font Size 14
+    // Get the pathname from the URL object and split it to find the last part (file name with possible query params)
+    let fileName = link.pathname.split('/').pop();
 
-    ' Hide the text and the tags between <<< and >>>
-    FormatTextWithWildcard "\<\<\<*\>\>\>", RGB(0, 0, 0), False, True, 0 ' No Color Change, No Bold, Replace with Blank, No Font Size Change
+    // Check if the fileName contains a query string (?)
+    if (fileName.includes('?')) {
+      // Strip out the query string
+      fileName = fileName.split('?')[0];
+    }
 
-    ' New Color: Make the text green between [[]]
-    FormatTextWithWildcard "\[\[.*\]\]", RGB(0, 255, 0), False, False, 0 ' Green Color, No Bold, No Replace, No Font Size Change
+    // Verify the file has a valid extension
+    const validExtensions = [
+      'doc', 'docx', 'rtf', 'txt', 'pdf', 'odt', 'dot', 'dotx',  // Documents
+      'xls', 'xlsx', 'csv', 'ods', 'xlt', 'xltx',                 // Spreadsheets
+      'ppt', 'pptx', 'pps', 'ppsx', 'potx',                       // Presentations
+      'jpg', 'jpeg', 'png', 'gif', 'bmp', 'tif', 'tiff',          // Images
+      'mp3', 'wav', 'mp4', 'wmv', 'avi', 'mov', 'mkv',            // Audio/Video
+      'zip', 'rar', '7z', 'tar', 'gz',                            // Compressed Files
+      'xml', 'json', 'html', 'xhtml', 'css', 'js',                // Web/Code Files
+      'psd', 'ai', 'svg',                                         // Design Files
+      'ics', 'exe', 'dll', 'iso'                                  // Miscellaneous
+    ];
 
-    ' New Color: Make the text orange between {}
-    FormatTextWithWildcard "\{.*\}", RGB(255, 165, 0), False, False, 0 ' Orange Color, No Bold, No Replace, No Font Size Change
-End Sub
+    const fileExtension = fileName.split('.').pop().toLowerCase();
 
-' Function to format the text using wildcards
-Sub FormatTextWithWildcard(wildcardPattern As String, textColor As Long, makeBold As Boolean, replaceWithBlank As Boolean, fontSize As Integer)
-    Dim rng As Range
-    Set rng = ActiveDocument.Content
+    // Check if the file name has one of the valid extensions
+    if (validExtensions.includes(fileExtension)) {
+      return fileName;
+    } else {
+      return ''; // Return empty if no valid extension is found
+    }
+  } catch (error) {
+    // In case of an invalid URL or other errors, return an empty string
+    return '';
+  }
+};
 
-    With rng.Find
-        ' Use wildcard search
-        .Text = wildcardPattern
-        .MatchWildcards = True
+// Example usage:
+const fileLinks = [
+  "https://example.com/docs/report.docx",
+  "https://example.com/files/presentation.pptx?version=2",
+  "https://example.com/files/spreadsheet.xlsx",
+  "https://example.com/downloads/image.jpg",
+  "https://example.com/files/no-extension",
+  "https://example.com/files/archive.zip?download=true",
+  "invalidLink"
+];
 
-        Do While .Execute
-            ' Set the range to the found text
-            Set rng = rng.Duplicate
+// Extract file names from the links
+const fileNames = fileLinks.map(link => extractFileNameFromLink(link));
 
-            If replaceWithBlank Then
-                ' Replace the entire found text (tags and content) with a blank
-                rng.Text = ""
-            Else
-                ' Apply formatting to the text inside the tags
-                Dim tagLength As Integer
-                
-                If Left(rng.Text, 3) = "<<<" Then
-                    tagLength = 3 ' Triple tag like <<< >>>
-                ElseIf Left(rng.Text, 2) = "<<" Then
-                    tagLength = 2 ' Double tag like << >>
-                Else
-                    tagLength = 1 ' Single tag like < >, [[ ]], { }
-                End If
-
-                ' Move past the opening tag and before the closing tag
-                rng.MoveStart wdCharacter, tagLength
-                rng.MoveEnd wdCharacter, -tagLength
-
-                ' Apply color, bold, and font size if specified
-                rng.Font.Color = textColor
-                rng.Font.Bold = makeBold
-                If fontSize > 0 Then
-                    rng.Font.Size = fontSize ' Set font size if specified
-                End If
-
-                ' Remove the tags by adjusting the range and replacing the text
-                rng.MoveStart wdCharacter, -tagLength ' Move back to include the opening tag
-                rng.MoveEnd wdCharacter, tagLength ' Extend to include the closing tag
-                rng.Text = Mid(rng.Text, tagLength + 1, Len(rng.Text) - 2 * tagLength) ' Remove the tags
-            End If
-
-            rng.Collapse wdCollapseEnd
-        Loop
-    End With
-End Sub
+console.log(fileNames); // Output: ["report.docx", "presentation.pptx", "spreadsheet.xlsx", "image.jpg", "", "archive.zip", ""]
