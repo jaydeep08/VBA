@@ -1,66 +1,75 @@
-Sub FormatAndCleanText()
-    Dim para As Paragraph
-    Dim rng As Range, tempRng As Range, innerText As Range
+Sub FormatDocumentText()
+    Dim doc As Document
+    Dim rng As Range
+    Dim findColor As Long
+    Dim found As Boolean
+    
+    ' Set the document to the active document
+    Set doc = ActiveDocument
 
-    ' Define color codes
-    Dim targetColor As Long: targetColor = RGB(255, 0, 0) ' Original color to be replaced
-    Dim blackColor As Long: blackColor = RGB(0, 0, 0) ' Black (new color for paragraphs)
-    Dim blueColor As Long: blueColor = RGB(0, 0, 255) ' Blue (for text inside <...>)
+    ' Task 1: Make text between <h1> and </h1> bold and blue
+    Set rng = doc.Content
+    With rng.Find
+        .ClearFormatting
+        .Text = "<h1>*</h1>"
+        .Replacement.ClearFormatting
+        .Replacement.Font.Bold = True
+        .Replacement.Font.Color = RGB(0, 0, 255) ' Blue color
+        .Wrap = wdFindContinue
+        .Forward = True
+        .Format = True
+        .MatchWildcards = True
+        
+        ' Execute the find and replace
+        found = rng.Find.Execute
+        Do While found
+            ' Select the found range and format it
+            rng.Text = Replace(rng.Text, "<h1>", "")
+            rng.Text = Replace(rng.Text, "</h1>", "")
+            rng.Font.Bold = True
+            rng.Font.Color = RGB(0, 0, 255) ' Blue color
+            ' Move to the next occurrence
+            rng.Start = rng.End
+            found = rng.Find.Execute
+        Loop
+    End With
 
-    ' Disable screen updates for performance
-    Application.ScreenUpdating = False
-    Application.EnableEvents = False
+    ' Task 2: Change specific colored text to black
+    Set rng = doc.Content
+    findColor = RGB(255, 0, 0) ' Change this to the color you want to replace (e.g., red)
+    
+    For Each rng In doc.StoryRanges
+        Do While rng.Find.Execute(FindText:="", Forward:=True, Wrap:=wdFindContinue, Format:=True)
+            If rng.Font.Color = findColor Then
+                rng.Font.Color = RGB(0, 0, 0) ' Change to black
+            End If
+            rng.Start = rng.End ' Move to the next occurrence
+        Loop
+    Next rng
 
-    ' Step 1: Format and remove <heading> tags
-    For Each para In ActiveDocument.Paragraphs
-        Set rng = para.Range
-        With rng.Find
-            .ClearFormatting
-            .Text = "<heading>*</heading>"
-            .MatchWildcards = True
-            .Wrap = wdFindContinue ' Ensure search continues across the document
-            Do While .Execute
-                Set tempRng = rng.Duplicate
-                tempRng.Start = tempRng.Start + 9 ' Skip <heading>
-                tempRng.End = tempRng.End - 10 ' Exclude </heading>
+    ' Task 3: Make text inside <tag> blue
+    Set rng = doc.Content
+    With rng.Find
+        .ClearFormatting
+        .Text = "<tag>*</tag>"
+        .Replacement.ClearFormatting
+        .Replacement.Font.Color = RGB(0, 0, 255) ' Blue color
+        .Wrap = wdFindContinue
+        .Forward = True
+        .Format = True
+        .MatchWildcards = True
+        
+        ' Execute the find and replace
+        found = rng.Find.Execute
+        Do While found
+            ' Select the found range and format it
+            rng.Text = Replace(rng.Text, "<tag>", "")
+            rng.Text = Replace(rng.Text, "</tag>", "")
+            rng.Font.Color = RGB(0, 0, 255) ' Blue color
+            ' Move to the next occurrence
+            rng.Start = rng.End
+            found = rng.Find.Execute
+        Loop
+    End With
 
-                tempRng.Font.Color = blueColor
-                tempRng.Font.Bold = True
-
-                ' Remove <heading> tags by keeping only inner text
-                rng.Text = tempRng.Text
-                rng.Collapse Direction:=wdCollapseEnd
-            Loop
-        End With
-    Next para
-
-    ' Step 2: Change paragraphs with specific color to black
-    For Each para In ActiveDocument.Paragraphs
-        Set rng = para.Range
-        If rng.Font.Color = targetColor Then
-            rng.Font.Color = blackColor
-        End If
-    Next para
-
-    ' Step 3: Make text inside <...> blue
-    For Each para In ActiveDocument.Paragraphs
-        Set rng = para.Range
-        With rng.Find
-            .ClearFormatting
-            .Text = "<*>"
-            .MatchWildcards = True
-            .Wrap = wdFindContinue ' Continue search across the document
-            Do While .Execute
-                Set innerText = rng.Duplicate
-                innerText.Font.Color = blueColor
-                rng.Collapse Direction:=wdCollapseEnd
-            Loop
-        End With
-    Next para
-
-    ' Re-enable screen updates
-    Application.ScreenUpdating = True
-    Application.EnableEvents = True
-
-    MsgBox "Formatting complete!"
 End Sub
