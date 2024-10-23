@@ -3,33 +3,30 @@ Sub ChangeTextBetweenBracketsToBlue()
     Dim cell As Cell
     Dim rng As Range
 
-    ' Set the color to blue
-    Const BLUE_COLOR As Long = RGB(0, 0, 255)
-
-    ' Loop through the entire document, including tables
+    ' Loop through all tables in the document
     For Each tbl In ActiveDocument.Tables
         For Each cell In tbl.Range.Cells
             Set rng = cell.Range
             rng.MoveEnd Unit:=wdCharacter, Count:=-1 ' Exclude end-of-cell marker
-            ApplyColorToTextInBrackets rng, BLUE_COLOR
+            ApplyColorToTextInBrackets rng
         Next cell
     Next tbl
 
-    ' Also apply the same logic to non-table text
+    ' Apply the same logic to non-table content
     Set rng = ActiveDocument.Content
-    ApplyColorToTextInBrackets rng, BLUE_COLOR
+    ApplyColorToTextInBrackets rng
 End Sub
 
-Sub ApplyColorToTextInBrackets(rng As Range, color As Long)
+Sub ApplyColorToTextInBrackets(rng As Range)
     With rng.Find
         .ClearFormatting
-        .Text = "\<*\>" ' Search pattern for text inside < and >
+        .Text = "\<*\>" ' Search for text inside < and >
         .Replacement.ClearFormatting
-        .Replacement.Font.Color = color
+        .Replacement.Font.Color = wdColorBlue ' Set font color to blue
         .Forward = True
         .Wrap = wdFindContinue
         .Format = True
-        .MatchWildcards = True ' Enable wildcard search
+        .MatchWildcards = True ' Use wildcard search
         .Execute Replace:=wdReplaceAll
     End With
 End Sub
