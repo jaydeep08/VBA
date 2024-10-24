@@ -9,14 +9,16 @@ Sub ChangeColorOnlyInBrackets()
     For Each cc In ActiveDocument.ContentControls
         ' Check if the content control is inside a table
         If cc.Range.Tables.Count > 0 Then
-            ' Loop through each cell in the table where the content control exists
-            For Each cellRange In cc.Range.Tables(1).Range.Cells
-                Set searchRange = cellRange.Range.Duplicate
-                searchRange.End = searchRange.End - 1 ' Exclude end-of-cell marker
-
-                ' Call the helper function to color text inside brackets
-                FormatAngularText searchRange
-            Next cellRange
+            ' Get the range of the content control (which might be in a table cell)
+            Set cellRange = cc.Range
+            
+            ' Exclude the end-of-cell marker from the range
+            If cellRange.End > cellRange.Start Then
+                cellRange.End = cellRange.End - 1
+            End If
+            
+            ' Call the helper function to color text inside brackets
+            FormatAngularText cellRange
         Else
             ' If not inside a table, process the content control directly
             Set searchRange = cc.Range.Duplicate
@@ -38,12 +40,12 @@ Sub FormatAngularText(ByVal rng As Range)
     ' Ensure both < and > are found and are in the correct order
     If startPos > 0 And endPos > startPos Then
         ' Create a range for the text inside the angular brackets
-        With rng.Duplicate
-            .Start = rng.Start + startPos
-            .End = rng.Start + endPos
+        Dim bracketRange As Range
+        Set bracketRange = rng.Duplicate
+        bracketRange.Start = rng.Start + startPos
+        bracketRange.End = rng.Start + endPos
 
-            ' Change the font color to blue
-            .Font.Color = wdColorBlue
-        End With
+        ' Change the font color to blue for the text inside the angular brackets
+        bracketRange.Font.Color = wdColorBlue
     End If
 End Sub
