@@ -1,41 +1,25 @@
-Sub ChangeTextInBracketsWithControls()
-    Dim tbl As Table
-    Dim cell As Cell
+Sub ChangeColorInsideAngularBrackets()
     Dim cc As ContentControl
-    Dim rng As Range
+    Dim txt As String
+    Dim startPos As Long, endPos As Long
 
-    ' Loop through all tables and cells
-    For Each tbl In ActiveDocument.Tables
-        For Each cell In tbl.Range.Cells
-            Set rng = cell.Range
-            rng.MoveEnd Unit:=wdCharacter, Count:=-1 ' Ignore end-of-cell marker
-            
-            ' Check for content controls within the cell
-            If cell.Range.ContentControls.Count > 0 Then
-                For Each cc In cell.Range.ContentControls
-                    ApplyBracketFormatting cc.Range ' Apply formatting to control content
-                Next cc
-            Else
-                ApplyBracketFormatting rng ' Apply formatting to plain cell text
+    ' Loop through all content controls in the document
+    For Each cc In ActiveDocument.ContentControls
+        If cc.Type = wdContentControlRichText Or cc.Type = wdContentControlText Then
+            txt = cc.Range.Text
+
+            ' Search for the first occurrence of angular brackets <...>
+            startPos = InStr(txt, "<")
+            endPos = InStr(txt, ">")
+
+            If startPos > 0 And endPos > startPos Then
+                ' Apply blue color to the text inside the angular brackets
+                With cc.Range.Characters(startPos + 1 To endPos - 1).Font
+                    .Color = wdColorBlue ' Change to blue
+                End With
             End If
-        Next cell
-    Next tbl
+        End If
+    Next cc
 
-    ' Handle regular document content outside tables
-    Set rng = ActiveDocument.Content
-    ApplyBracketFormatting rng
-End Sub
-
-Sub ApplyBracketFormatting(rng As Range)
-    With rng.Find
-        .ClearFormatting
-        .Text = "\<*\>" ' Wildcard to match text inside < and >
-        .Replacement.ClearFormatting
-        .Replacement.Font.Color = wdColorBlue ' Change color to blue
-        .Forward = True
-        .Wrap = wdFindStop ' Stop at the end of range
-        .Format = True
-        .MatchWildcards = True ' Enable wildcard matching
-        .Execute Replace:=wdReplaceAll
-    End With
+    MsgBox "Text color inside angular brackets changed to blue!"
 End Sub
