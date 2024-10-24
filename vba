@@ -1,14 +1,11 @@
-Sub DisableContentControllersKeepEditableContent()
+Sub RemoveContentControlsByAddingNewLine()
     Dim cc As ContentControl
 
     ' Loop through all content controls in the document
     For Each cc In ActiveDocument.ContentControls
-        ' Lock the content control to prevent deletion
-        cc.LockContentControl = True
-        
-        ' Allow editing the content inside the content control
-        cc.LockContents = False
+        ' Add a newline at the end of the content control's text
+        cc.Range.Text = cc.Range.Text & vbCrLf
     Next cc
 
-    MsgBox "Content controls have been disabled but the inner text is still editable.", vbInformation
+    MsgBox "Content controls removed by adding new lines.", vbInformation
 End Sub
