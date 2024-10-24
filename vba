@@ -8,14 +8,15 @@ Sub ChangeColorInsideAngularBrackets()
         If cc.Type = wdContentControlRichText Or cc.Type = wdContentControlText Then
             txt = cc.Range.Text
 
-            ' Search for the first occurrence of angular brackets <...>
+            ' Find the position of the first < and >
             startPos = InStr(txt, "<")
             endPos = InStr(txt, ">")
 
+            ' Ensure both < and > are found, and they are in correct order
             If startPos > 0 And endPos > startPos Then
-                ' Apply blue color to the text inside the angular brackets
+                ' Select the range inside the angular brackets
                 With cc.Range.Characters(startPos + 1 To endPos - 1).Font
-                    .Color = wdColorBlue ' Change to blue
+                    .Color = wdColorBlue ' Set text color to blue
                 End With
             End If
         End If
