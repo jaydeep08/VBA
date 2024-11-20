@@ -1,63 +1,44 @@
-Here’s the revised version of your email:
+import React from "react";
 
+const Card = () => {
+  const cardStyle = {
+    backgroundImage: `url('https://via.placeholder.com/300')`, // Replace with your image URL
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    borderRadius: "10px",
+    padding: "20px",
+    width: "300px",
+    height: "200px",
+    color: "white",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+  };
 
----
+  const buttonStyle = {
+    backgroundColor: "blue",
+    color: "white",
+    border: "none",
+    borderRadius: "5px",
+    padding: "10px",
+    width: "100%", // Take full width of the card
+    marginTop: "10px",
+    cursor: "pointer",
+    fontSize: "16px",
+  };
 
-Subject: Minutes of Meeting: Year-End Review Discussion
+  return (
+    <div style={cardStyle}>
+      <h2>Card Heading</h2>
+      <div style={{ marginTop: "auto", width: "100%" }}>
+        <button style={buttonStyle}>Button 1</button>
+        <button style={buttonStyle}>Button 2</button>
+        <button style={buttonStyle}>Button 3</button>
+      </div>
+    </div>
+  );
+};
 
-Dear [Manager's Name],
-
-Thank you for our discussion during the year-end review. Below is the summary of our conversation for reference:
-
-1. Performance:
-
-Performance feedback was positive, with no specific concerns raised.
-
-
-
-2. Action Items:
-
-Maintain RTO (Return to Office) days as per the policy.
-
-Complete the pending certification by the first week of January.
-
-Conduct more Brown Bag sessions to contribute to knowledge-sharing initiatives.
-
-Focus on maintaining the Genome Score through continuous learning and improvement.
-
-
-
-3. Skill Development:
-
-As I am currently working on UI and SP (SharePoint), prepare to handle single projects in the future, managing tasks from requirement gathering to client handling and delivery.
-
-
-
-4. Collaboration and Teamwork:
-
-Assist teammates by guiding them and giving hints to help them learn, rather than spoon-feeding solutions.
-
-Encourage them to send official emails summarizing their help requests (keeping managers in CC) if they require continued support.
-
-Maintain a clear record of the work I am doing and update the scrum sheet daily for better tracking and visibility.
-
-
-
-5. Professionalism:
-
-Maintain confidentiality regarding salary information by neither sharing mine nor inquiring about others'.
-
-Continue to uphold a professional approach in all interactions.
-
-
-
-
-Please let me know if I missed or misinterpreted anything. I will focus on the mentioned points and keep you updated on my progress.
-
-Best regards,
-[Your Name]
-
-
----
-
-This version integrates all the additional points while ensuring clarity and a professional tone.
+export default Card;
