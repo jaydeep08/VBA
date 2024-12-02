@@ -1,0 +1,93 @@
+// Function to generate an ICS file content and return a Blob URL
+function generateICSFile(eventData) {
+    const icsContent = `
+BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+UID:${eventData.id}@example.com
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTART:${eventData.startDateTime.replace(/[-:]/g, '').split('.')[0]}Z
+DTEND:${eventData.endDateTime.replace(/[-:]/g, '').split('.')[0]}Z
+SUMMARY:${eventData.title}
+DESCRIPTION:${eventData.description}
+LOCATION:${eventData.location}
+URL:${eventData.eventUrl || ''}
+END:VEVENT
+END:VCALENDAR
+    `.trim();
+
+    // Create a Blob from the ICS content
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+
+    // Generate a downloadable URL
+    return URL.createObjectURL(blob);
+}
+
+// Function to transform raw event data into the desired object format
+function transformEventData(rawEventData) {
+    return rawEventData.map(event => {
+        // Convert start and end times to local time zone
+        const startTimeLocal = new Date(event.startDateTime).toLocaleString();
+        const endTimeLocal = new Date(event.endDateTime).toLocaleString();
+
+        // Generate ICS file link
+        const icsFileLink = generateICSFile(event);
+
+        // Construct the custom event object
+        return {
+            title: event.title,
+            description: event.description,
+            image: event.image || 'No image available', // Fallback for missing images
+            location: event.location || 'Location not specified',
+            startTime: startTimeLocal,
+            endTime: endTimeLocal,
+            icsLink: icsFileLink, // The dynamically created ICS file link
+            eventLink: event.eventUrl || '#', // The event link
+        };
+    });
+}
+
+// Example raw event data (mocked for demonstration)
+const rawEventData = [
+    {
+        id: "1",
+        title: "Team Meeting",
+        description: "Discuss team updates and progress.",
+        location: "Conference Room A",
+        image: "https://via.placeholder.com/150",
+        startDateTime: "2024-12-02T13:00:00Z",
+        endDateTime: "2024-12-02T14:00:00Z",
+        eventUrl: "https://example.com/events/1", // Event link
+    },
+    {
+        id: "2",
+        title: "Project Kickoff",
+        description: "Kickoff meeting for the new project.",
+        location: "Online (Zoom)",
+        startDateTime: "2024-12-03T09:00:00Z",
+        endDateTime: "2024-12-03T10:30:00Z",
+        eventUrl: "https://example.com/events/2", // Event link
+    },
+];
+
+// Transform the data and log it
+const transformedEvents = transformEventData(rawEventData);
+console.log(transformedEvents);
+
+// Example: Dynamically add links to the page
+transformedEvents.forEach(event => {
+    const link = document.createElement('a');
+    link.href = event.icsLink;
+    link.download = `${event.title}.ics`;
+    link.textContent = `Download ${event.title} ICS`;
+    document.body.appendChild(link);
+    document.body.appendChild(document.createElement('br'));
+
+    // Add a clickable link to the event
+    const eventLink = document.createElement('a');
+    eventLink.href = event.eventLink;
+    eventLink.textContent = `View ${event.title}`;
+    eventLink.target = '_blank'; // Open in a new tab
+    document.body.appendChild(eventLink);
+    document.body.appendChild(document.createElement('br'));
+});
