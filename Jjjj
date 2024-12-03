@@ -1,41 +1,25 @@
-Career Plan:
+import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz";
 
-In the next 2-3 years, I aim to:
+/**
+ * Convert a local time to UTC in US Pacific Time Zone.
+ * @param {string} localTime - Local time in ISO 8601 format or as a Date object.
+ * @returns {string} - Converted UTC time in ISO 8601 format.
+ */
+const convertLocalToUSPacificUTC = (localTime) => {
+  const localDate = new Date(localTime); // Parse the local time
+  const usPacificTimeZone = "America/Los_Angeles"; // US Pacific Time Zone
 
-1. Develop Advanced Technical Expertise:
+  // Convert local time to US Pacific Time Zone
+  const pacificDate = utcToZonedTime(localDate, usPacificTimeZone);
 
-Deepen my knowledge in React, SharePoint, Power Automate, and Graph API to deliver more innovative and scalable solutions.
+  // Convert US Pacific Time Zone to UTC
+  const utcDate = zonedTimeToUtc(pacificDate, usPacificTimeZone);
 
-Gain hands-on experience in integrating AI-powered chatbots with SharePoint sites to enhance usability, automate processes, and improve user interactions.
+  // Format as ISO 8601 string
+  return utcDate.toISOString();
+};
 
-
-
-2. Become a Full-Stack SharePoint Specialist:
-
-Aspire to handle projects end-to-end, from requirement gathering to design, development, and delivery, taking full ownership of SharePoint-based solutions to ensure seamless execution and quality.
-
-
-
-3. Expand Solution Design Skills:
-
-Focus on designing end-to-end solutions by combining modern frameworks with AI capabilities to create smarter, more efficient systems.
-
-
-
-4. Pursue a Leadership Role:
-
-Transition into a technical lead or solution architect role by improving my leadership and project management skills.
-
-Mentor team members and lead complex projects to drive organizational growth.
-
-
-
-5. Continuous Learning:
-
-Explore emerging technologies like Copilot, AI in automation, and low-code platforms to stay updated with industry trends.
-
-
-
-
-This plan reflects your aspiration to take ownership of projects while advancing your skills and leadership abilities.
-
+// Example Usage
+const localTime = "2024-12-02T10:30:00"; // Local time
+const utcTime = convertLocalToUSPacificUTC(localTime);
+console.log("Converted UTC Time:", utcTime);
