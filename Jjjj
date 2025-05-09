@@ -1,140 +1,146 @@
-const MS_IN_60_DAYS = 1000 * 60 * 60 * 24 * 60;
+function groupDataWithRows(data: any[]) {
+  const result: any[] = [];
 
-const groupDataByRows = (data: any[]) => {
-  return data.reduce((acc: any, item) => {
-    const swimline = item.Swimline;
-    const subSwimline = item.SubSwimline;
-    const itemStart = new Date(item.Startdate).getTime();
+  const grouped = data.reduce((acc, item) => {
+    if (!acc[item.Swimline]) acc[item.Swimline] = {};
+    if (!acc[item.Swimline][item.SubSwimline]) acc[item.Swimline][item.SubSwimline] = [];
+    acc[item.Swimline][item.SubSwimline].push(item);
+    return acc;
+  }, {} as Record<string, Record<string, any[]>>);
 
-    if (!acc[swimline]) acc[swimline] = {};
-    if (!acc[swimline][subSwimline]) {
-      acc[swimline][subSwimline] = {
-        SubSwimline: subSwimline,
-        Rows: [],
-      };
-    }
+  Object.entries(grouped).forEach(([swimline, subSwimlines]) => {
+    const swimlineObj = {
+      swimline,
+      subSwimlines: [] as any[]
+    };
 
-    const rows = acc[swimline][subSwimline].Rows;
-    let placed = false;
+    Object.entries(subSwimlines).forEach(([subName, items]) => {
+      // Sort items by start date
+      const sortedItems = items.sort(
+        (a, b) => new Date(a.Startdate).getTime() - new Date(b.Startdate).getTime()
+      );
 
-    for (let row of rows) {
-      let hasOverlap = row.some((rItem: any) => {
-        const rDate = new Date(rItem.Startdate).getTime();
-        return Math.abs(itemStart - rDate) < MS_IN_60_DAYS;
+      // Allocate to rows
+      const rows: any[][] = [];
+
+      sortedItems.forEach(item => {
+        const start = new Date(item.Startdate).getTime();
+        let placed = false;
+
+        for (const row of rows) {
+          const lastItem = row[row.length - 1];
+          const lastDate = new Date(lastItem.Startdate).getTime();
+          if (start - lastDate >= 1000 * 60 * 60 * 24 * 60) {
+            row.push(item);
+            placed = true;
+            break;
+          }
+        }
+
+        if (!placed) {
+          rows.push([item]);
+        }
       });
 
-      if (!hasOverlap) {
-        row.push(item);
-        placed = true;
-        break;
-      }
-    }
+      swimlineObj.subSwimlines.push({
+        name: subName,
+        rows
+      });
+    });
 
-    if (!placed) {
-      rows.push([item]);
-    }
+    result.push(swimlineObj);
+  });
 
-    return acc;
-  }, {});
-};
+  return result;
+}
 
 
-
-const renderChart = (groupedData: any) => {
-  const chartStart = new Date("2023/01/01").getTime();
-  const chartEnd = new Date("2023/12/31").getTime();
-  const chartRange = chartEnd - chartStart;
+const renderChart = (structuredData: any[]) => {
+  const months = Array.from({ length: 12 }, (_, i) => i);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", fontFamily: "sans-serif" }}>
-      {Object.keys(groupedData).map((swimline, swimlineIndex) => (
+    <div style={{ width: "100%", position: "relative" }}>
+      {/* Render vertical monthly lines */}
+      <div style={{ position: "absolute", top: 0, bottom: 0, width: "100%", zIndex: 0 }}>
+        {months.map((month) => (
+          <div
+            key={month}
+            style={{
+              position: "absolute",
+              left: `${(month / 12) * 100}%`,
+              top: 0,
+              bottom: 0,
+              width: "1px",
+              backgroundColor: "#ddd",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Swimline level */}
+      {structuredData.map((swimlineData, swimIndex) => (
         <div
-          key={swimlineIndex}
+          key={swimIndex}
           style={{
             display: "flex",
             borderBottom: "2px solid #ccc",
             marginBottom: "20px",
           }}
         >
-          {/* Swimline Label */}
-          <div
-            style={{
-              width: "20%",
-              backgroundColor: "#f0f0f0",
-              padding: "10px",
-              borderRight: "1px solid #ccc",
-              fontWeight: "bold",
-            }}
-          >
-            {swimline}
+          {/* Left column: Swimline title */}
+          <div style={{ width: "20%", padding: "10px", fontWeight: "bold" }}>
+            {swimlineData.swimline}
           </div>
 
-          {/* Swimline Content */}
+          {/* Right column: SubSwimlines with rows */}
           <div style={{ width: "80%" }}>
-            {Object.keys(groupedData[swimline]).map((subSwimline, subIndex) => {
-              const subData = groupedData[swimline][subSwimline];
+            {swimlineData.subSwimlines.map((sub, subIndex) => (
+              <div key={subIndex} style={{ marginBottom: "10px" }}>
+                {/* SubSwimline title */}
+                <div style={{ fontWeight: "bold", padding: "5px 0" }}>{sub.name}</div>
 
-              return (
-                <div key={subIndex} style={{ marginBottom: "10px" }}>
-                  {/* SubSwimline Row */}
-                  <div style={{ display: "flex" }}>
-                    <div
-                      style={{
-                        width: "20%",
-                        backgroundColor: "#e8e8e8",
-                        padding: "5px 10px",
-                        borderRight: "1px solid #ccc",
-                        fontStyle: "italic",
-                      }}
-                    >
-                      {subSwimline}
-                    </div>
+                {/* Timeline rows */}
+                {sub.rows.map((row, rowIndex) => (
+                  <div
+                    key={rowIndex}
+                    style={{
+                      position: "relative",
+                      height: "40px",
+                      backgroundColor: rowIndex % 2 === 0 ? "#f9f9f9" : "#e6f0ff",
+                      display: "flex",
+                      alignItems: "center",
+                      borderBottom: "1px solid #ccc",
+                    }}
+                  >
+                    {row.map((item: any, itemIndex: number) => {
+                      const date = new Date(item.Startdate);
+                      const leftPercent =
+                        ((date.getMonth() + date.getDate() / 30) / 12) * 100;
 
-                    <div style={{ width: "80%", position: "relative" }}>
-                      {subData.Rows.map((row: any[], rowIndex: number) => (
+                      return (
                         <div
-                          key={rowIndex}
+                          key={itemIndex}
                           style={{
-                            height: "40px",
-                            position: "relative",
-                            backgroundColor: rowIndex % 2 === 0 ? "#fafafa" : "#ffffff",
-                            borderBottom: "1px dashed #ccc",
+                            position: "absolute",
+                            left: `${leftPercent}%`,
+                            transform: "translateX(-50%)",
+                            backgroundColor: "#4287f5",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            color: "#fff",
+                            fontSize: "12px",
+                            whiteSpace: "nowrap",
+                            zIndex: 1,
                           }}
                         >
-                          {row.map((item: any, itemIndex: number) => {
-                            const startTime = new Date(item.Startdate).getTime();
-                            const leftPercent = ((startTime - chartStart) / chartRange) * 100;
-
-                            return (
-                              <div
-                                key={itemIndex}
-                                style={{
-                                  position: "absolute",
-                                  left: `${leftPercent}%`,
-                                  transform: "translateX(-50%)",
-                                  backgroundColor: "#2196f3",
-                                  padding: "3px 8px",
-                                  borderRadius: "4px",
-                                  color: "#fff",
-                                  fontSize: "12px",
-                                  whiteSpace: "nowrap",
-                                  top: "50%",
-                                  transformOrigin: "top left",
-                                  transform: "translate(-50%, -50%)",
-                                  zIndex: 2,
-                                }}
-                              >
-                                {item.Title}
-                              </div>
-                            );
-                          })}
+                          {item.Title}
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
-                </div>
-              );
-            })}
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       ))}
