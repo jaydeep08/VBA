@@ -1,67 +1,122 @@
-function groupDataWithRows(data: any[]) {
-  const result: any[] = [];
+const renderChart = (structuredData: any[]) => {
+  const months = Array.from({ length: 12 }, (_, i) => i);
 
-  // Group by Swimline → SubSwimline
-  const grouped: Record<string, Record<string, any[]>> = {};
+  return (
+    <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+      {structuredData.map((swimlineData, swimIndex) => {
+        const totalRows = swimlineData.subSwimlines.reduce(
+          (sum: number, sub: any) => sum + sub.rows.length,
+          0
+        );
 
-  for (const item of data) {
-    const swimline = item.Swimline;
-    const subSwimline = item.SubSwimline;
+        return (
+          <div
+            key={swimIndex}
+            style={{ display: "flex", borderBottom: "2px solid #ccc", minHeight: totalRows * 40 }}
+          >
+            {/* Left Section (20%) */}
+            <div style={{ width: "20%", borderRight: "1px solid #ccc" }}>
+              {/* Swimline Title */}
+              <div
+                style={{
+                  padding: "10px",
+                  fontWeight: "bold",
+                  height: totalRows * 40,
+                  display: "flex",
+                  alignItems: "center",
+                  borderBottom: "1px solid #ddd",
+                  backgroundColor: "#f0f0f0"
+                }}
+              >
+                {swimlineData.swimline}
+              </div>
 
-    if (!grouped[swimline]) {
-      grouped[swimline] = {};
-    }
-    if (!grouped[swimline][subSwimline]) {
-      grouped[swimline][subSwimline] = [];
-    }
+              {/* SubSwimline Labels */}
+              <div style={{ position: "relative", top: `-${totalRows * 40}px` }}>
+                {swimlineData.subSwimlines.map((sub, subIndex) => (
+                  <div key={subIndex}>
+                    {sub.rows.map((_, rowIndex) => (
+                      <div
+                        key={rowIndex}
+                        style={{
+                          height: "40px",
+                          paddingLeft: "15px",
+                          display: "flex",
+                          alignItems: "center",
+                          backgroundColor: rowIndex % 2 === 0 ? "#fff" : "#f9f9f9",
+                          borderBottom: "1px solid #eee"
+                        }}
+                      >
+                        {rowIndex === 0 ? sub.name : ""}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
 
-    grouped[swimline][subSwimline].push(item);
-  }
+            {/* Right Section (80%) - Timeline */}
+            <div style={{ width: "80%", position: "relative" }}>
+              {/* Vertical timeline grid */}
+              {months.map((month) => (
+                <div
+                  key={month}
+                  style={{
+                    position: "absolute",
+                    left: `${(month / 12) * 100}%`,
+                    top: 0,
+                    bottom: 0,
+                    width: "1px",
+                    backgroundColor: "#ddd",
+                    zIndex: 0,
+                  }}
+                />
+              ))}
 
-  // Build the hierarchical structure with rows
-  for (const swimlineKey in grouped) {
-    const swimlineObj = {
-      swimline: swimlineKey,
-      subSwimlines: [] as any[]
-    };
+              {/* Render pointer rows */}
+              {swimlineData.subSwimlines.map((sub, subIndex) =>
+                sub.rows.map((row, rowIndex) => (
+                  <div
+                    key={`${subIndex}-${rowIndex}`}
+                    style={{
+                      height: "40px",
+                      position: "relative",
+                      backgroundColor: rowIndex % 2 === 0 ? "#fff" : "#f4f9ff",
+                      borderBottom: "1px solid #ccc",
+                    }}
+                  >
+                    {row.map((item: any, itemIndex: number) => {
+                      const date = new Date(item.Startdate);
+                      const leftPercent =
+                        ((date.getMonth() + date.getDate() / 30) / 12) * 100;
 
-    const subGroup = grouped[swimlineKey];
-
-    for (const subKey in subGroup) {
-      const items = subGroup[subKey];
-
-      // Sort items by Startdate
-      items.sort((a, b) => new Date(a.Startdate).getTime() - new Date(b.Startdate).getTime());
-
-      const rows: any[][] = [];
-
-      for (const item of items) {
-        const itemDate = new Date(item.Startdate).getTime();
-        let placed = false;
-
-        for (const row of rows) {
-          const lastItem = row[row.length - 1];
-          const lastDate = new Date(lastItem.Startdate).getTime();
-          if (itemDate - lastDate >= 1000 * 60 * 60 * 24 * 60) {
-            row.push(item);
-            placed = true;
-            break;
-          }
-        }
-
-        if (!placed) {
-          rows.push([item]);
-        }
-      }
-
-      swimlineObj.subSwimlines.push({
-        name: subKey,
-        rows: rows
-      });
-    }
-
-    result.push(swimlineObj);
-  }
-
-  return result;
-}
+                      return (
+                        <div
+                          key={itemIndex}
+                          style={{
+                            position: "absolute",
+                            left: `${leftPercent}%`,
+                            transform: "translateX(-50%)",
+                            backgroundColor: "#4287f5",
+                            padding: "4px 8px",
+                            borderRadius: "4px",
+                            color: "#fff",
+                            fontSize: "12px",
+                            whiteSpace: "nowrap",
+                            zIndex: 2,
+                          }}
+                        >
+                          {item.Title}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
