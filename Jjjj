@@ -7,11 +7,15 @@ function safeParseObjectString(input: string): any | null {
   } catch (_) {}
 
   try {
-    // Replace unquoted keys (basic handling)
-    let safe = input.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+    let safe = input;
 
-    // Replace single-quoted string values with double-quoted ones
-    // e.g., 'John' -> "John" but avoids changing content inside double quotes
+    // Remove trailing commas before } or ]
+    safe = safe.replace(/,\s*(?=[}\]])/g, '');
+
+    // Quote unquoted keys (only alphanumerics and underscores)
+    safe = safe.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+
+    // Replace single-quoted string values with double quotes (preserving contents)
     safe = safe.replace(/'([^']*)'/g, (_, val) => `"${val.replace(/"/g, '\\"')}"`);
 
     return JSON.parse(safe);
