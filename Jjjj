@@ -1,26 +1,18 @@
-function safeParseObjectString(input: string): any | null {
-  if (!input || typeof input !== 'string') return null;
+i have to write MOM for my One on one with my manager
 
-  // First try standard JSON
-  try {
-    return JSON.parse(input);
-  } catch (_) {}
+initially i showed him about what all project i have worked till now, and my
 
-  try {
-    let safe = input;
+contalbution in it,
 
-    // Remove trailing commas before } or ]
-    safe = safe.replace(/,\s*(?=[}\]])/g, '');
+then he asked me do i ave any problem and any chalanges i am facing in the team,
 
-    // Quote unquoted keys (only alphanumerics and underscores)
-    safe = safe.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+he told me that i am doing good in the team as i working on both Ul and SP (SHAREPOINT), he told me to make my visibility in team by creating new things, by sharing
 
-    // Replace single-quoted string values with double quotes (preserving contents)
-    safe = safe.replace(/'([^']*)'/g, (_, val) => `"${val.replace(/"/g, '\\"')}"`);
+knewledge
 
-    return JSON.parse(safe);
-  } catch (e) {
-    console.error('Parsing failed:', e);
-    return null;
-  }
-}
+manintain RTo (REPORT TO OFFICE), maintain minimun 6 hour active WAM hours, do not take unplaned leave,
+
+he asked do you have any problem with any team member, are they exploiting you like giving or assigning their work or extra work
+add this also, add his in ever communications, so he will get to know of everythinfga, keep track of every things,
+
+do not strach yourself, do not over berdon, if something is there, let him know, he will add other resourses to balance it
