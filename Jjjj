@@ -1,69 +1,22 @@
-function groupDataWithRows(data: any[]): any[] {
-  const result: any[] = [];
-  const swimlineMap: Record<string, any> = {};
+function safeParseObjectString(input: string): any | null {
+  if (!input || typeof input !== 'string') return null;
 
-  data.forEach((item) => {
-    const swimline = item.Swimline;
-    const subSwimline = item.SubSwimline;
+  // First try standard JSON
+  try {
+    return JSON.parse(input);
+  } catch (_) {}
 
-    if (!swimlineMap[swimline]) {
-      swimlineMap[swimline] = {
-        swimline,
-        subSwimlines: {}
-      };
-    }
+  try {
+    // Replace unquoted keys (basic handling)
+    let safe = input.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
 
-    if (!swimlineMap[swimline].subSwimlines[subSwimline]) {
-      swimlineMap[swimline].subSwimlines[subSwimline] = [];
-    }
+    // Replace single-quoted string values with double-quoted ones
+    // e.g., 'John' -> "John" but avoids changing content inside double quotes
+    safe = safe.replace(/'([^']*)'/g, (_, val) => `"${val.replace(/"/g, '\\"')}"`);
 
-    swimlineMap[swimline].subSwimlines[subSwimline].push(item);
-  });
-
-  Object.keys(swimlineMap).forEach((swimlineKey) => {
-    const subSwimlinesArr: any[] = [];
-
-    const subMap = swimlineMap[swimlineKey].subSwimlines;
-
-    Object.keys(subMap).forEach((subKey) => {
-      const items = subMap[subKey];
-
-      // Sort by Startdate
-      items.sort((a, b) => new Date(a.Startdate).getTime() - new Date(b.Startdate).getTime());
-
-      const rows: any[][] = [];
-
-      items.forEach((item) => {
-        const itemDate = new Date(item.Startdate).getTime();
-        let placed = false;
-
-        for (const row of rows) {
-          const lastItem = row[row.length - 1];
-          const lastDate = new Date(lastItem.Startdate).getTime();
-
-          if (itemDate - lastDate >= 1000 * 60 * 60 * 24 * 60) { // >= 60 days
-            row.push(item);
-            placed = true;
-            break;
-          }
-        }
-
-        if (!placed) {
-          rows.push([item]);
-        }
-      });
-
-      subSwimlinesArr.push({
-        name: subKey,
-        rows
-      });
-    });
-
-    result.push({
-      swimline: swimlineKey,
-      subSwimlines: subSwimlinesArr
-    });
-  });
-
-  return result;
+    return JSON.parse(safe);
+  } catch (e) {
+    console.error('Parsing failed:', e);
+    return null;
+  }
 }
