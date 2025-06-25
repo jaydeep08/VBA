@@ -1,1 +1,143 @@
 
+import React, { useState } from "react";
+import "./ContentMigrationForm.css";
+
+const ContentMigrationForm: React.FC = () => {
+  const [sourceSiteUrl, setSourceSiteUrl] = useState("");
+  const [sourceList, setSourceList] = useState("");
+  const [destSiteUrl, setDestSiteUrl] = useState("");
+  const [destList, setDestList] = useState("");
+  const [deleteDestData, setDeleteDestData] = useState(false);
+  const [replaceItems, setReplaceItems] = useState(false);
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showProgressModal, setShowProgressModal] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirm = async () => {
+    setShowConfirmModal(false);
+    setShowProgressModal(true);
+    setProgress(0);
+
+    // Placeholder for actual migration call
+    await simulateMigration();
+
+    setShowProgressModal(false);
+  };
+
+  const simulateMigration = async () => {
+    for (let i = 1; i <= 100; i++) {
+      setProgress(i);
+      await new Promise((res) => setTimeout(res, 30)); // simulate async progress
+    }
+  };
+
+  return (
+    <div className="form-wrapper">
+      <form className="form-container" onSubmit={handleSubmit}>
+        <h2 className="form-title">Migrate SharePoint List</h2>
+
+        <div className="form-group">
+          <label>Source Site URL</label>
+          <input
+            type="text"
+            value={sourceSiteUrl}
+            onChange={(e) => setSourceSiteUrl(e.target.value)}
+            placeholder="Enter source site URL"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Source List</label>
+          <input
+            type="text"
+            value={sourceList}
+            onChange={(e) => setSourceList(e.target.value)}
+            placeholder="Enter source list"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Destination Site URL</label>
+          <input
+            type="text"
+            value={destSiteUrl}
+            onChange={(e) => setDestSiteUrl(e.target.value)}
+            placeholder="Enter destination site URL"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Destination List</label>
+          <input
+            type="text"
+            value={destList}
+            onChange={(e) => setDestList(e.target.value)}
+            placeholder="Enter destination list"
+          />
+        </div>
+
+        <div className="form-toggle">
+          <span>Delete Destination Data</span>
+          <input
+            type="checkbox"
+            checked={deleteDestData}
+            onChange={(e) => setDeleteDestData(e.target.checked)}
+          />
+        </div>
+
+        <div className="form-toggle">
+          <span>Replace Items with Same ID</span>
+          <input
+            type="checkbox"
+            checked={replaceItems}
+            onChange={(e) => setReplaceItems(e.target.checked)}
+          />
+        </div>
+
+        <button type="submit" className="submit-button">Submit</button>
+      </form>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3 className="modal-title">Confirm Migration</h3>
+            <ul className="modal-summary">
+              <li><strong>Source Site:</strong> {sourceSiteUrl}</li>
+              <li><strong>Source List:</strong> {sourceList}</li>
+              <li><strong>Destination Site:</strong> {destSiteUrl}</li>
+              <li><strong>Destination List:</strong> {destList}</li>
+              <li><strong>Delete Existing Data:</strong> {deleteDestData ? "Yes" : "No"}</li>
+              <li><strong>Replace Same ID Items:</strong> {replaceItems ? "Yes" : "No"}</li>
+            </ul>
+            <div className="modal-actions">
+              <button onClick={() => setShowConfirmModal(false)}>Cancel</button>
+              <button onClick={handleConfirm}>Confirm</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Progress Modal */}
+      {showProgressModal && (
+        <div className="modal-overlay">
+          <div className="modal progress-modal">
+            <h3 className="modal-title">Migrating List Items...</h3>
+            <div className="progress-bar-container">
+              <div className="progress-bar" style={{ width: `${progress}%` }} />
+            </div>
+            <p>{progress}% complete</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ContentMigrationForm;
