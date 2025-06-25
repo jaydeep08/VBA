@@ -1,131 +1,161 @@
-.form-wrapper {
-  font-family: Inter, "Noto Sans", sans-serif;
-}
+import React, { useState, useEffect } from "react";
+import "./ContentMigrationForm.css";
 
-.form-container {
-  max-width: 640px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: #fefefe;
-  border-radius: 12px;
-  border: 1px solid #e0e0e0;
-}
+const ContentMigrationForm: React.FC = () => {
+  const [sourceSiteUrl, setSourceSiteUrl] = useState("");
+  const [sourceList, setSourceList] = useState("");
+  const [destSiteUrl, setDestSiteUrl] = useState("");
+  const [destList, setDestList] = useState("");
+  const [deleteDestData, setDeleteDestData] = useState(false);
+  const [replaceItems, setReplaceItems] = useState(false);
 
-.form-title {
-  font-size: 1.75rem;
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-}
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showProgressModal, setShowProgressModal] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isFormValid, setIsFormValid] = useState(false);
 
-.form-group {
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-}
+  // Dummy list options (you can fetch these via Graph API)
+  const listOptions = ["Employees", "Projects", "Tasks", "Documents"];
 
-.form-group label {
-  margin-bottom: 0.4rem;
-  font-weight: 500;
-}
+  useEffect(() => {
+    // Revalidate form whenever input changes
+    setIsFormValid(
+      sourceSiteUrl.trim() &&
+      sourceList &&
+      destSiteUrl.trim() &&
+      destList
+    );
+  }, [sourceSiteUrl, sourceList, destSiteUrl, destList]);
 
-.form-group input {
-  height: 3rem;
-  padding: 0 1rem;
-  border: 1px solid #dbdbdb;
-  border-radius: 10px;
-  background: #fafafa;
-  font-size: 1rem;
-}
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowConfirmModal(true);
+  };
 
-.form-toggle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 1rem 0;
-}
+  const handleConfirm = async () => {
+    setShowConfirmModal(false);
+    setShowProgressModal(true);
+    setProgress(0);
+    await simulateMigration();
+    setShowProgressModal(false);
+  };
 
-.submit-button {
-  width: 100%;
-  background-color: black;
-  color: white;
-  padding: 0.75rem;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-  border: none;
-}
+  const simulateMigration = async () => {
+    for (let i = 1; i <= 100; i++) {
+      setProgress(i);
+      await new Promise((res) => setTimeout(res, 25));
+    }
+  };
 
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
+  return (
+    <div className="form-wrapper">
+      <form className="form-container" onSubmit={handleSubmit}>
+        <h2 className="form-title">Migrate SharePoint List</h2>
 
-.modal {
-  background: white;
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 500px;
-  text-align: left;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
-}
+        <div className="form-group">
+          <label>Source Site URL</label>
+          <input
+            type="text"
+            value={sourceSiteUrl}
+            onChange={(e) => setSourceSiteUrl(e.target.value)}
+            placeholder="Enter source site URL"
+          />
+        </div>
 
-.modal-title {
-  font-size: 1.3rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
+        <div className="form-group">
+          <label>Source List</label>
+          <select
+            value={sourceList}
+            onChange={(e) => setSourceList(e.target.value)}
+          >
+            <option value="">-- Select Source List --</option>
+            {listOptions.map((list) => (
+              <option key={list} value={list}>{list}</option>
+            ))}
+          </select>
+        </div>
 
-.modal-summary {
-  list-style: none;
-  padding-left: 0;
-  margin-bottom: 1.5rem;
-}
+        <div className="form-group">
+          <label>Destination Site URL</label>
+          <input
+            type="text"
+            value={destSiteUrl}
+            onChange={(e) => setDestSiteUrl(e.target.value)}
+            placeholder="Enter destination site URL"
+          />
+        </div>
 
-.modal-summary li {
-  margin-bottom: 0.5rem;
-}
+        <div className="form-group">
+          <label>Destination List</label>
+          <select
+            value={destList}
+            onChange={(e) => setDestList(e.target.value)}
+          >
+            <option value="">-- Select Destination List --</option>
+            {listOptions.map((list) => (
+              <option key={list} value={list}>{list}</option>
+            ))}
+          </select>
+        </div>
 
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-}
+        <div className="form-toggle">
+          <span>Delete Destination Data</span>
+          <input
+            type="checkbox"
+            checked={deleteDestData}
+            onChange={(e) => setDeleteDestData(e.target.checked)}
+          />
+        </div>
 
-.modal-actions button {
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-}
+        <div className="form-toggle">
+          <span>Replace Items with Same ID</span>
+          <input
+            type="checkbox"
+            checked={replaceItems}
+            onChange={(e) => setReplaceItems(e.target.checked)}
+          />
+        </div>
 
-.modal-actions button:first-child {
-  background: #e0e0e0;
-}
+        <button type="submit" className="submit-button" disabled={!isFormValid}>
+          Submit
+        </button>
+      </form>
 
-.modal-actions button:last-child {
-  background: black;
-  color: white;
-}
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3 className="modal-title">Confirm Migration</h3>
+            <ul className="modal-summary">
+              <li><strong>Source Site:</strong> {sourceSiteUrl}</li>
+              <li><strong>Source List:</strong> {sourceList}</li>
+              <li><strong>Destination Site:</strong> {destSiteUrl}</li>
+              <li><strong>Destination List:</strong> {destList}</li>
+              <li><strong>Delete Existing Data:</strong> {deleteDestData ? "Yes" : "No"}</li>
+              <li><strong>Replace Same ID Items:</strong> {replaceItems ? "Yes" : "No"}</li>
+            </ul>
+            <div className="modal-actions">
+              <button onClick={() => setShowConfirmModal(false)}>Cancel</button>
+              <button onClick={handleConfirm}>Confirm</button>
+            </div>
+          </div>
+        </div>
+      )}
 
-.progress-bar-container {
-  height: 8px;
-  width: 100%;
-  background: #dbdbdb;
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 1rem;
-}
+      {/* Progress Modal */}
+      {showProgressModal && (
+        <div className="modal-overlay">
+          <div className="modal progress-modal">
+            <h3 className="modal-title">Migrating List Items...</h3>
+            <div className="progress-bar-container">
+              <div className="progress-bar" style={{ width: `${progress}%` }} />
+            </div>
+            <p>{progress}% complete</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
-.progress-bar {
-  height: 100%;
-  background: black;
-  transition: width 0.3s ease;
-}
+export default ContentMigrationForm;
