@@ -1,118 +1,103 @@
-import React, { useRef, useEffect } from "react";
-import "./CustomChart.css";
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-const CustomChart = () => {
-  const headerRef = useRef(null);
-  const plotRef = useRef(null);
-  const yAxisRef = useRef(null);
+.chart-container {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  grid-template-rows: 80px 1fr;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
 
-  // Sample data for categories, subcategories, and months
-  const categories = [
-    {
-      name: "Category A",
-      subcategories: ["Sub A1", "Sub A2"]
-    },
-    {
-      name: "Category B",
-      subcategories: []
-    },
-    {
-      name: "Category C",
-      subcategories: ["Sub C1"]
-    }
-  ];
+.y-axis {
+  grid-column: 1;
+  grid-row: 2;
+  overflow-y: auto;
+  background: #f4f4f4;
+  border-right: 1px solid #ccc;
+}
 
-  const months = [
-    { name: "Jan", flags: ["Flag1", "Flag2"] },
-    { name: "Feb", flags: ["Flag1"] },
-    { name: "Mar", flags: ["Flag1", "Flag2", "Flag3"] },
-    { name: "Apr", flags: [] },
-    { name: "May", flags: ["Flag1"] },
-    { name: "Jun", flags: ["Flag1", "Flag2"] }
-  ];
+.category-block {
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
 
-  useEffect(() => {
-    const header = headerRef.current;
-    const plot = plotRef.current;
-    const yAxis = yAxisRef.current;
+.category-block.has-sub {
+  background: #fafafa;
+}
 
-    const syncScroll = () => {
-      header.scrollLeft = plot.scrollLeft; // horizontal sync
-      yAxis.scrollTop = plot.scrollTop; // vertical sync
-    };
+.category-name {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
 
-    plot.addEventListener("scroll", syncScroll);
-    return () => plot.removeEventListener("scroll", syncScroll);
-  }, []);
+.subcategory-list .subcategory {
+  padding-left: 15px;
+  font-size: 14px;
+  color: #555;
+}
 
-  return (
-    <div className="chart-container">
-      {/* Y-axis */}
-      <div className="y-axis" ref={yAxisRef}>
-        {categories.map((cat, index) => (
-          <div
-            className={`category-block ${cat.subcategories.length ? "has-sub" : ""}`}
-            key={index}
-          >
-            <div className="category-name">{cat.name}</div>
-            {cat.subcategories.length > 0 && (
-              <div className="subcategory-list">
-                {cat.subcategories.map((sub, idx) => (
-                  <div className="subcategory" key={idx}>
-                    {sub}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+.header {
+  grid-column: 2;
+  grid-row: 1;
+  overflow-x: auto;
+  background: #f8f9fa;
+  border-bottom: 1px solid #ccc;
+}
 
-      {/* Header with months and flags */}
-      <div className="header" ref={headerRef}>
-        <div className="months">
-          {months.map((month, i) => (
-            <div className="month" key={i}>
-              <span>{month.name}</span>
-              <div className="flags">
-                {month.flags.map((flag, idx) => (
-                  <div className="flag" key={idx}>
-                    {flag}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+.months {
+  display: flex;
+}
 
-      {/* Plotting area */}
-      <div className="plot-area" ref={plotRef}>
-        {categories.map((cat, i) => (
-          <div
-            className={`plot-row ${cat.subcategories.length ? "has-sub" : ""}`}
-            key={i}
-          >
-            {cat.subcategories.length > 0 ? (
-              cat.subcategories.map((sub, idx) => (
-                <div className="plot-sub-row" key={idx}>
-                  {months.map((month, mIdx) => (
-                    <div className="plot-point" key={mIdx}></div>
-                  ))}
-                </div>
-              ))
-            ) : (
-              <div className="plot-single-row">
-                {months.map((month, mIdx) => (
-                  <div className="plot-point" key={mIdx}></div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
+.month {
+  min-width: 150px;
+  text-align: center;
+  border-right: 1px solid #ddd;
+  padding: 10px;
+  position: relative;
+}
 
-export default CustomChart;
+.flags {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.flag {
+  background: #007bff;
+  color: white;
+  padding: 2px 6px;
+  margin: 2px 0;
+  font-size: 10px;
+  border-radius: 4px;
+}
+
+.plot-area {
+  grid-column: 2;
+  grid-row: 2;
+  overflow: auto;
+  background: #fff;
+}
+
+.plot-row {
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+
+.plot-sub-row,
+.plot-single-row {
+  display: flex;
+  margin-bottom: 5px;
+}
+
+.plot-point {
+  min-width: 150px;
+  height: 30px;
+  border: 1px dashed #ccc;
+  margin-right: 2px;
+}
