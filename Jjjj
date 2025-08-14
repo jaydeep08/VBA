@@ -1,1 +1,118 @@
-From birdsong wake-up calls to server logs and syntax errors, it's been a wild, nerdy ride. And honestly? I wouldn't trade it for anything—even if the jungle was quieter than my code editor at 2 AM.
+import React, { useRef, useEffect } from "react";
+import "./CustomChart.css";
+
+const CustomChart = () => {
+  const headerRef = useRef(null);
+  const plotRef = useRef(null);
+  const yAxisRef = useRef(null);
+
+  // Sample data for categories, subcategories, and months
+  const categories = [
+    {
+      name: "Category A",
+      subcategories: ["Sub A1", "Sub A2"]
+    },
+    {
+      name: "Category B",
+      subcategories: []
+    },
+    {
+      name: "Category C",
+      subcategories: ["Sub C1"]
+    }
+  ];
+
+  const months = [
+    { name: "Jan", flags: ["Flag1", "Flag2"] },
+    { name: "Feb", flags: ["Flag1"] },
+    { name: "Mar", flags: ["Flag1", "Flag2", "Flag3"] },
+    { name: "Apr", flags: [] },
+    { name: "May", flags: ["Flag1"] },
+    { name: "Jun", flags: ["Flag1", "Flag2"] }
+  ];
+
+  useEffect(() => {
+    const header = headerRef.current;
+    const plot = plotRef.current;
+    const yAxis = yAxisRef.current;
+
+    const syncScroll = () => {
+      header.scrollLeft = plot.scrollLeft; // horizontal sync
+      yAxis.scrollTop = plot.scrollTop; // vertical sync
+    };
+
+    plot.addEventListener("scroll", syncScroll);
+    return () => plot.removeEventListener("scroll", syncScroll);
+  }, []);
+
+  return (
+    <div className="chart-container">
+      {/* Y-axis */}
+      <div className="y-axis" ref={yAxisRef}>
+        {categories.map((cat, index) => (
+          <div
+            className={`category-block ${cat.subcategories.length ? "has-sub" : ""}`}
+            key={index}
+          >
+            <div className="category-name">{cat.name}</div>
+            {cat.subcategories.length > 0 && (
+              <div className="subcategory-list">
+                {cat.subcategories.map((sub, idx) => (
+                  <div className="subcategory" key={idx}>
+                    {sub}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Header with months and flags */}
+      <div className="header" ref={headerRef}>
+        <div className="months">
+          {months.map((month, i) => (
+            <div className="month" key={i}>
+              <span>{month.name}</span>
+              <div className="flags">
+                {month.flags.map((flag, idx) => (
+                  <div className="flag" key={idx}>
+                    {flag}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Plotting area */}
+      <div className="plot-area" ref={plotRef}>
+        {categories.map((cat, i) => (
+          <div
+            className={`plot-row ${cat.subcategories.length ? "has-sub" : ""}`}
+            key={i}
+          >
+            {cat.subcategories.length > 0 ? (
+              cat.subcategories.map((sub, idx) => (
+                <div className="plot-sub-row" key={idx}>
+                  {months.map((month, mIdx) => (
+                    <div className="plot-point" key={mIdx}></div>
+                  ))}
+                </div>
+              ))
+            ) : (
+              <div className="plot-single-row">
+                {months.map((month, mIdx) => (
+                  <div className="plot-point" key={mIdx}></div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default CustomChart;
