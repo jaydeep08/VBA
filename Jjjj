@@ -1,25 +1,36 @@
-const leftRefs = useRef([]);
-const rightRefs = useRef([]);
+.tooltip-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: inline-block;
+  cursor: pointer;
+  z-index: 1000;
+}
 
-useEffect(() => {
-  const syncHeights = () => {
-    for (let i = 0; i < leftRefs.current.length; i++) {
-      const leftEl = leftRefs.current[i];
-      const rightEl = rightRefs.current[i];
+.icon {
+  font-size: 24px;
+}
 
-      if (leftEl && rightEl) {
-        const maxHeight = Math.max(leftEl.offsetHeight, rightEl.offsetHeight);
-        leftEl.style.height = `${maxHeight}px`;
-        rightEl.style.height = `${maxHeight}px`;
-      }
-    }
-  };
+.custom-tooltip {
+  visibility: hidden;
+  width: 250px; /* Fixed width */
+  background-color: #333;
+  color: #fff;
+  text-align: left;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 
-  syncHeights();
+  position: absolute;
+  top: 100%; /* Position below the icon */
+  right: 0; /* Align right edge of tooltip with icon */
+  margin-top: 8px;
+  
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
 
-  // Observe resize inside the container
-  const observer = new ResizeObserver(syncHeights);
-  observer.observe(document.querySelector('.chart-container'));
-
-  return () => observer.disconnect();
-}, []);
+.tooltip-container:hover .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
