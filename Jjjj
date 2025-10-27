@@ -1,1 +1,30 @@
-You’re currently exploring information for Colombia 🇨🇴.”
+const postActivityMiddleware = () => next => card => {
+  const rendered = next(card);
+
+  return props => {
+    const element = rendered(props);
+
+    // Run after each activity (message) is rendered
+    setTimeout(() => {
+      try {
+        // Select all chat message bubbles (you can narrow the selector if needed)
+        const bubbles = document.querySelectorAll('.webchat__bubble__content, .webchat__bubble__content--text');
+        
+        bubbles.forEach(bubble => {
+          const links = bubble.querySelectorAll("a[target='_blank']");
+          
+          links.forEach(link => {
+            if (!link.hasAttribute('data-interception')) {
+              link.setAttribute('data-interception', 'off');
+              link.setAttribute('rel', 'noopener noreferrer');
+            }
+          });
+        });
+      } catch (err) {
+        console.error('Error updating link attributes:', err);
+      }
+    }, 0); // Wait for DOM to settle
+
+    return element;
+  };
+};
