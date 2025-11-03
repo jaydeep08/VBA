@@ -1,30 +1,216 @@
-const postActivityMiddleware = () => next => card => {
-  const rendered = next(card);
+Perfect — thanks for giving that detailed overview. You already have a great foundation for your year-end review PPT. Let’s structure it smartly so it tells a clear, confident, and achievement-oriented story while naturally setting up your promotion and salary discussion at the end.
 
-  return props => {
-    const element = rendered(props);
 
-    // Run after each activity (message) is rendered
-    setTimeout(() => {
-      try {
-        // Select all chat message bubbles (you can narrow the selector if needed)
-        const bubbles = document.querySelectorAll('.webchat__bubble__content, .webchat__bubble__content--text');
-        
-        bubbles.forEach(bubble => {
-          const links = bubble.querySelectorAll("a[target='_blank']");
-          
-          links.forEach(link => {
-            if (!link.hasAttribute('data-interception')) {
-              link.setAttribute('data-interception', 'off');
-              link.setAttribute('rel', 'noopener noreferrer');
-            }
-          });
-        });
-      } catch (err) {
-        console.error('Error updating link attributes:', err);
-      }
-    }, 0); // Wait for DOM to settle
+---
 
-    return element;
-  };
-};
+🎯 Suggested PPT Structure (with content ideas)
+
+
+---
+
+🏠 Slide 1: Title Slide
+
+Title: Year-End Review 2025
+Subtitle: My Goals, Achievements & Learnings
+Include:
+
+Your Name
+
+Role / Designation
+
+Team / Department
+
+Date
+
+
+(Optional: Add a relevant background image like your team’s product, SharePoint logo, or a subtle tech design.)
+
+
+---
+
+🚀 Slide 2: Overview / Agenda
+
+Briefly list what your presentation will cover:
+
+1. Projection Work & Deliverables
+
+
+2. Learning & Certifications
+
+
+3. Knowledge Sharing Sessions (Brown Bags)
+
+
+4. Collaboration & Support
+
+
+5. Future Goals & Growth Discussion
+
+
+
+
+---
+
+💼 Slide 3–4: Projection Work
+
+Goal: Showcase your technical contributions and measurable impact.
+
+Content suggestions:
+
+Overview: “Worked on multiple SharePoint Framework (SPFx) and React-based solutions that improved collaboration, automation, and efficiency across teams.”
+
+Highlights:
+
+Developed and deployed multiple SPFx web parts integrated with SharePoint lists and Graph API.
+
+Implemented solutions for document management, list migration, and Teams integration to simplify business processes.
+
+Contributed to dashboard creation for tracking metrics, enhancing visibility for business users.
+
+Enhanced data automation and Power Automate flows to improve accuracy and reduce manual intervention.
+
+Collaborated across teams for testing, debugging, and deployment, ensuring smooth rollouts.
+
+
+
+Tips: ✅ Include screenshots or short demo snippets of key projects (if allowed).
+✅ Mention any business impact (e.g., “Reduced manual data entry by 40%” or “Improved data accessibility for 5+ teams”).
+
+
+---
+
+🎓 Slide 5: Learning & Training
+
+Goal: Show continuous skill growth and self-driven learning.
+
+Content:
+
+Certifications Completed:
+
+[List the certifications, e.g., “Microsoft Certified: Power Platform Fundamentals,” “React Advanced Concepts,” etc.]
+
+
+Learning Boulder / Internal Trainings:
+
+Completed modules on [list topics, e.g., Power Automate, SPFx advanced patterns, Graph API integration, etc.]
+
+Participated in continuous learning sessions to strengthen technical and problem-solving capabilities.
+
+
+Key Takeaway:
+“Focused on expanding my expertise in SharePoint, React, and automation tools to contribute more efficiently to team goals.”
+
+
+
+---
+
+🧠 Slide 6–7: Knowledge Sharing & Brown Bags
+
+Goal: Highlight leadership, initiative, and team contribution.
+
+Content:
+
+Brown Bag 1: TypeScript Compilation using Go Language
+
+Shared insights on how TypeScript now compiles using Go and its performance benefits.
+
+
+Brown Bag 2: SharePoint Site Web Part
+
+Demonstrated custom web part that lists GeoIDs, SiteIDs, and DriveIDs using the absolute site URL.
+
+
+Brown Bag 3: List Migration Tool
+
+Showed custom web part for migrating list content between SharePoint sites without lookups.
+
+
+Offline Sessions (2–3):
+
+Conducted knowledge-sharing sessions for UI team members on SharePoint architecture and Graph API integration.
+
+
+Copilot Agent Setup Session:
+
+Guided colleagues with Copilot licenses on setting up Copilot Agent code and configuring Azure App ID & Secret.
+
+
+
+Optional Visual: Create a table or icons for each session (Topic | Audience | Impact).
+
+
+---
+
+🤝 Slide 8: Collaboration & Support
+
+Goal: Reinforce your teamwork and leadership qualities.
+
+Content:
+
+Supported peers on SharePoint-related challenges and guided them on integration and automation.
+
+Actively contributed to team knowledge base and documentation for easier onboarding.
+
+Participated in cross-team initiatives to share expertise and drive consistent practices.
+
+
+
+---
+
+🌱 Slide 9: Future Goals
+
+Goal: Show readiness for next-level responsibility.
+
+Content:
+
+Strengthen expertise in React and SPFx to lead development efforts independently.
+
+Explore Power Platform and Microsoft Copilot capabilities to innovate automation.
+
+Continue mentoring new members and enabling broader adoption of SharePoint and automation.
+
+Aim to take ownership of end-to-end project delivery in the next cycle.
+
+
+
+---
+
+💬 Slide 10: Appreciation & Growth Discussion
+
+Goal: Smoothly transition to the promotion conversation.
+
+Content:
+
+“This year has been a strong period of technical and personal growth.
+I’ve contributed to impactful projects, shared knowledge across teams, and continuously upskilled.
+Based on my performance and contributions, I’d like to discuss potential next steps for my growth — including role advancement and compensation alignment.”
+
+
+Tip for Discussion: When presenting this slide:
+
+1. Acknowledge their support (“Thanks for the guidance throughout the year.”)
+
+
+2. Show evidence of your consistent contributions (refer to earlier slides).
+
+
+3. Position it as growth-oriented rather than just a raise (“I’d like to take on more responsibilities in upcoming projects, and I believe a promotion aligns with that next step.”).
+
+
+
+
+---
+
+🌟 Slide 11: Closing / Thank You
+
+Simple “Thank You” slide with your name and contact info.
+Optionally include:
+
+> “Looking forward to continued growth and contributions in 2026!”
+
+
+
+
+---
+
+Would you like me to draft slide-by-slide text content (ready to paste into PowerPoint) — including bullet points and short titles — for all the sections above (Projection, Learning, Sessions, Future Goals, etc.) so you can directly use them in your PPT?
