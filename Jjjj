@@ -1,36 +1,88 @@
-Perfect — this version sounds authentic, grounded, and shows both your technical versatility and team-first mindset 👏
+import React, { useEffect, useRef, useState } from "react";
+import DataGrid from "devextreme-react/data-grid";
+import { Button } from "devextreme-react/button";
 
-Here’s your final, concise, and polished version of that section with just those three to four strong points — simple, natural, and professional:
+const employees = [
+  { id: 1, name: "John", department: "HR", age: 28 },
+  { id: 2, name: "Jane", department: "Finance", age: 31 },
+  { id: 3, name: "Mike", department: "IT", age: 26 },
+  { id: 4, name: "Sara", department: "HR", age: 35 },
+  { id: 5, name: "Alex", department: "IT", age: 40 },
+];
 
+const MyGrid = () => {
+  const gridRef = useRef(null);
+  const [data, setData] = useState(employees);
 
----
+  // 🔹 Load grid state from DB (on mount)
+  useEffect(() => {
+    const loadGridState = async () => {
+      // Simulated API call
+      const response = await fetch("/api/getGridState");
+      if (response.ok) {
+        const saved = await response.json();
+        applyGridState(saved);
+      }
+    };
+    loadGridState();
+  }, []);
 
-💡 Slide Title: Technical Contribution & Impact
+  // 🔹 Apply saved state
+  const applyGridState = (state) => {
+    const grid = gridRef.current?.instance;
+    if (!grid || !state) return;
 
+    // Restore selected rows
+    grid.selectRows(state.selectedRowKeys || [], false);
 
----
+    // Restore filters
+    (state.columns || []).forEach((col) => {
+      if (col.filterValue !== undefined && col.filterValue !== null) {
+        grid.columnOption(col.dataField, "filterValue", col.filterValue);
+      } else {
+        grid.columnOption(col.dataField, "filterValue", null);
+      }
+    });
 
-Slide Content:
+    grid.refresh();
+  };
 
-🧩 Multi-Technology Support: I actively support and work across UI (React), SharePoint (SPFx), Copilot Agents, and Power Automate projects simultaneously — managing tasks in multiple domains at the same time.
+  // 🔹 Save grid state (on button click)
+  const saveGridState = async () => {
+    const grid = gridRef.current?.instance;
+    if (!grid) return;
 
-🔍 POCs & Research Contributions: Performed several Proof of Concepts (POCs) and shared key findings that helped the team explore new technologies and prepare for future projects.
+    const state = {
+      selectedRowKeys: grid.getSelectedRowKeys(),
+      columns: grid.getVisibleColumns().map((col) => ({
+        dataField: col.dataField,
+        filterValue: col.filterValue || null,
+      })),
+    };
 
-🤝 Go-To Person for Help: I am often approached by team members for technical help, regardless of my role or experience level. Even if I am not familiar with a topic, I research, explore, and share useful insights to support them.
+    // Simulated API call
+    await fetch("/api/saveGridState", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(state),
+    });
 
-🌱 Guiding and Supporting Others: I also guide my junior teammates whenever they face challenges, helping them understand concepts and resolve issues effectively.
+    alert("✅ Grid state saved!");
+  };
 
+  return (
+    <div style={{ padding: 20 }}>
+      <Button text="Save Grid" onClick={saveGridState} type="default" />
+      <DataGrid
+        ref={gridRef}
+        dataSource={data}
+        keyExpr="id"
+        showBorders={true}
+        selection={{ mode: "multiple" }}
+        filterRow={{ visible: true }}
+      />
+    </div>
+  );
+};
 
-
----
-
-✨ Optional Summary Line:
-
-> “Actively contributing across multiple technologies, supporting team members, and driving learning through POCs and continuous exploration.”
-
-
-
-
----
-
-Would you like me to now integrate this finalized version into your complete PPT outline (with all other sections like Project Work, Learning & Training, Brown Bags, Project Ownership, Achievements, Strengths, and Future Goals)?Would you like me to now merge this with your other finalized sections (Projection Work, Learning & Training, Knowledge Sharing, Future Goals, etc.) into a final PowerPoint-ready outline, so your entire presentation content is cohesive and ready to paste?
+export default MyGrid;
