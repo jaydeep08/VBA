@@ -1,88 +1,39 @@
-import React, { useEffect, useRef, useState } from "react";
-import DataGrid from "devextreme-react/data-grid";
-import { Button } from "devextreme-react/button";
+Sub SplitByCategory_AllColumns()
 
-const employees = [
-  { id: 1, name: "John", department: "HR", age: 28 },
-  { id: 2, name: "Jane", department: "Finance", age: 31 },
-  { id: 3, name: "Mike", department: "IT", age: 26 },
-  { id: 4, name: "Sara", department: "HR", age: 35 },
-  { id: 5, name: "Alex", department: "IT", age: 40 },
-];
+    Dim src As Worksheet
+    Dim lastRow As Long, lastCol As Long
+    Dim categoryCol As Long
+    Dim dict As Object
+    Dim r As Long
+    Dim cat As String
+    Dim tgt As Worksheet
 
-const MyGrid = () => {
-  const gridRef = useRef(null);
-  const [data, setData] = useState(employees);
+    Set src = ThisWorkbook.Sheets("Sheet1") ' change name
+    categoryCol = 1 ' change if category is not column A
 
-  // 🔹 Load grid state from DB (on mount)
-  useEffect(() => {
-    const loadGridState = async () => {
-      // Simulated API call
-      const response = await fetch("/api/getGridState");
-      if (response.ok) {
-        const saved = await response.json();
-        applyGridState(saved);
-      }
-    };
-    loadGridState();
-  }, []);
+    lastRow = src.Cells(src.Rows.Count, categoryCol).End(xlUp).Row
+    lastCol = src.Cells(1, src.Columns.Count).End(xlToLeft).Column
 
-  // 🔹 Apply saved state
-  const applyGridState = (state) => {
-    const grid = gridRef.current?.instance;
-    if (!grid || !state) return;
+    Set dict = CreateObject("Scripting.Dictionary")
 
-    // Restore selected rows
-    grid.selectRows(state.selectedRowKeys || [], false);
+    ' Create sheets
+    For r = 2 To lastRow
+        cat = src.Cells(r, categoryCol).Value
+        If Not dict.exists(cat) Then
+            dict.Add cat, True
+            Set tgt = Sheets.Add(After:=Sheets(Sheets.Count))
+            tgt.Name = Left(cat, 31)
+            src.Rows(1).Resize(, lastCol).Copy tgt.Rows(1)
+        End If
+    Next r
 
-    // Restore filters
-    (state.columns || []).forEach((col) => {
-      if (col.filterValue !== undefined && col.filterValue !== null) {
-        grid.columnOption(col.dataField, "filterValue", col.filterValue);
-      } else {
-        grid.columnOption(col.dataField, "filterValue", null);
-      }
-    });
+    ' Copy data
+    For r = 2 To lastRow
+        cat = src.Cells(r, categoryCol).Value
+        src.Rows(r).Resize(, lastCol).Copy _
+        Sheets(Left(cat, 31)).Cells(Rows.Count, 1).End(xlUp).Offset(1)
+    Next r
 
-    grid.refresh();
-  };
+    MsgBox "Done! Sheets created per category."
 
-  // 🔹 Save grid state (on button click)
-  const saveGridState = async () => {
-    const grid = gridRef.current?.instance;
-    if (!grid) return;
-
-    const state = {
-      selectedRowKeys: grid.getSelectedRowKeys(),
-      columns: grid.getVisibleColumns().map((col) => ({
-        dataField: col.dataField,
-        filterValue: col.filterValue || null,
-      })),
-    };
-
-    // Simulated API call
-    await fetch("/api/saveGridState", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(state),
-    });
-
-    alert("✅ Grid state saved!");
-  };
-
-  return (
-    <div style={{ padding: 20 }}>
-      <Button text="Save Grid" onClick={saveGridState} type="default" />
-      <DataGrid
-        ref={gridRef}
-        dataSource={data}
-        keyExpr="id"
-        showBorders={true}
-        selection={{ mode: "multiple" }}
-        filterRow={{ visible: true }}
-      />
-    </div>
-  );
-};
-
-export default MyGrid;
+End Sub
