@@ -1,6 +1,6 @@
-function main(workbook: ExcelScript.Workbook): Record<string, object[]> {
+function main(workbook: ExcelScript.Workbook): object {
 
-  const sheetNames: string[] = [
+  const sheetNames = [
     "User Activity",
     "User Pathway Summary",
     "Shared Items",
@@ -8,7 +8,7 @@ function main(workbook: ExcelScript.Workbook): Record<string, object[]> {
     "Published Pathway Details"
   ];
 
-  let result: Record<string, object[]> = {};
+  let result: { [key: string]: object[] } = {};
 
   for (let name of sheetNames) {
 
@@ -21,20 +21,35 @@ function main(workbook: ExcelScript.Workbook): Record<string, object[]> {
     const values = usedRange.getValues();
     if (values.length < 4) continue;
 
-    // Row 4 = headers (index 3)
-    const headers = values[3] as (string | number | boolean)[];
-
-    // Row 5 onward = data
+    const headers = values[3];
     const dataRows = values.slice(4);
 
-    const formattedData: object[] = dataRows
-      .filter(row => row.some(cell => cell !== null && cell !== ""))
-      .map(row => {
+    let formattedData: object[] = [];
 
-        let rowObject: { [key: string]: string | number | boolean | null } = {};
+    for (let row of dataRows) {
 
-        headers.forEach((header, index) => {
-          const headerName = header ? header.toString() : `Column${index}`;
+      // Skip empty rows
+      if (!row.some(cell => cell !== null && cell !== "")) continue;
+
+      let rowObject: { [key: string]: string | number | boolean | null } = {};
+
+      for (let i = 0; i < headers.length; i++) {
+
+        const headerName = headers[i]
+          ? headers[i].toString()
+          : `Column${i}`;
+
+        rowObject[headerName] = row[i] as string | number | boolean | null;
+      }
+
+      formattedData.push(rowObject);
+    }
+
+    result[name] = formattedData;
+  }
+
+  return result;
+}          const headerName = header ? header.toString() : `Column${index}`;
           rowObject[headerName] = row[index] as string | number | boolean | null;
         });
 
