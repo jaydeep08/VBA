@@ -1,6 +1,6 @@
-function main(workbook: ExcelScript.Workbook) {
+function main(workbook: ExcelScript.Workbook): Record<string, object[]> {
 
-  const sheetNames = [
+  const sheetNames: string[] = [
     "User Activity",
     "User Pathway Summary",
     "Shared Items",
@@ -8,7 +8,7 @@ function main(workbook: ExcelScript.Workbook) {
     "Published Pathway Details"
   ];
 
-  let result: any = {};
+  let result: Record<string, object[]> = {};
 
   for (let name of sheetNames) {
 
@@ -22,19 +22,22 @@ function main(workbook: ExcelScript.Workbook) {
     if (values.length < 4) continue;
 
     // Row 4 = headers (index 3)
-    const headers = values[3];
+    const headers = values[3] as (string | number | boolean)[];
 
     // Row 5 onward = data
     const dataRows = values.slice(4);
 
-    // Convert rows into structured JSON using headers
-    let formattedData = dataRows
-      .filter(row => row.some(cell => cell !== null && cell !== "")) // remove empty rows
+    const formattedData: object[] = dataRows
+      .filter(row => row.some(cell => cell !== null && cell !== ""))
       .map(row => {
-        let rowObject: any = {};
+
+        let rowObject: { [key: string]: string | number | boolean | null } = {};
+
         headers.forEach((header, index) => {
-          rowObject[header] = row[index];
+          const headerName = header ? header.toString() : `Column${index}`;
+          rowObject[headerName] = row[index] as string | number | boolean | null;
         });
+
         return rowObject;
       });
 
@@ -42,42 +45,4 @@ function main(workbook: ExcelScript.Workbook) {
   }
 
   return result;
-} SplitByCategory_AllColumns()
-
-    Dim src As Worksheet
-    Dim lastRow As Long, lastCol As Long
-    Dim categoryCol As Long
-    Dim dict As Object
-    Dim r As Long
-    Dim cat As String
-    Dim tgt As Worksheet
-
-    Set src = ThisWorkbook.Sheets("Sheet1") ' change name
-    categoryCol = 1 ' change if category is not column A
-
-    lastRow = src.Cells(src.Rows.Count, categoryCol).End(xlUp).Row
-    lastCol = src.Cells(1, src.Columns.Count).End(xlToLeft).Column
-
-    Set dict = CreateObject("Scripting.Dictionary")
-
-    ' Create sheets
-    For r = 2 To lastRow
-        cat = src.Cells(r, categoryCol).Value
-        If Not dict.exists(cat) Then
-            dict.Add cat, True
-            Set tgt = Sheets.Add(After:=Sheets(Sheets.Count))
-            tgt.Name = Left(cat, 31)
-            src.Rows(1).Resize(, lastCol).Copy tgt.Rows(1)
-        End If
-    Next r
-
-    ' Copy data
-    For r = 2 To lastRow
-        cat = src.Cells(r, categoryCol).Value
-        src.Rows(r).Resize(, lastCol).Copy _
-        Sheets(Left(cat, 31)).Cells(Rows.Count, 1).End(xlUp).Offset(1)
-    Next r
-
-    MsgBox "Done! Sheets created per category."
-
-End Sub
+}
