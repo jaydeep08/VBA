@@ -1,4 +1,48 @@
-Sub SplitByCategory_AllColumns()
+function main(workbook: ExcelScript.Workbook) {
+
+  const sheetNames = [
+    "User Activity",
+    "User Pathway Summary",
+    "Shared Items",
+    "Published Pathway Summary",
+    "Published Pathway Details"
+  ];
+
+  let result: any = {};
+
+  for (let name of sheetNames) {
+
+    const sheet = workbook.getWorksheet(name);
+    if (!sheet) continue;
+
+    const usedRange = sheet.getUsedRange();
+    if (!usedRange) continue;
+
+    const values = usedRange.getValues();
+    if (values.length < 4) continue;
+
+    // Row 4 = headers (index 3)
+    const headers = values[3];
+
+    // Row 5 onward = data
+    const dataRows = values.slice(4);
+
+    // Convert rows into structured JSON using headers
+    let formattedData = dataRows
+      .filter(row => row.some(cell => cell !== null && cell !== "")) // remove empty rows
+      .map(row => {
+        let rowObject: any = {};
+        headers.forEach((header, index) => {
+          rowObject[header] = row[index];
+        });
+        return rowObject;
+      });
+
+    result[name] = formattedData;
+  }
+
+  return result;
+} SplitByCategory_AllColumns()
 
     Dim src As Worksheet
     Dim lastRow As Long, lastCol As Long
