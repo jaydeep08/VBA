@@ -1,4 +1,4 @@
-function main(workbook: ExcelScript.Workbook): object {
+function main(workbook: ExcelScript.Workbook) {
 
   const sheetNames = [
     "User Activity",
@@ -8,7 +8,7 @@ function main(workbook: ExcelScript.Workbook): object {
     "Published Pathway Details"
   ];
 
-  let result: { [key: string]: object[] } = {};
+  let result = [];
 
   for (let name of sheetNames) {
 
@@ -24,14 +24,13 @@ function main(workbook: ExcelScript.Workbook): object {
     const headers = values[3];
     const dataRows = values.slice(4);
 
-    let formattedData: object[] = [];
+    let formattedData = [];
 
     for (let row of dataRows) {
 
-      // Skip empty rows
       if (!row.some(cell => cell !== null && cell !== "")) continue;
 
-      let rowObject: { [key: string]: string | number | boolean | null } = {};
+      let rowObject = {};
 
       for (let i = 0; i < headers.length; i++) {
 
@@ -39,24 +38,16 @@ function main(workbook: ExcelScript.Workbook): object {
           ? headers[i].toString()
           : `Column${i}`;
 
-        rowObject[headerName] = row[i] as string | number | boolean | null;
+        rowObject[headerName] = row[i];
       }
 
       formattedData.push(rowObject);
     }
 
-    result[name] = formattedData;
-  }
-
-  return result;
-}          const headerName = header ? header.toString() : `Column${index}`;
-          rowObject[headerName] = row[index] as string | number | boolean | null;
-        });
-
-        return rowObject;
-      });
-
-    result[name] = formattedData;
+    result.push({
+      sheetName: name,
+      data: formattedData
+    });
   }
 
   return result;
