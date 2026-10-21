@@ -1,62 +1,48 @@
-JAYDEEP PATIDAR
-Full Stack Developer | AI Solutions Engineer
-+91 8223013352 | jaydeeppatidar008@gmail.com | LinkedIn | GitHub
-Professional Summary
-Full Stack Developer with 3+ years of experience designing and delivering end-to-end web applications — React/TypeScript front
-ends, Python (Azure Functions) backend services, and cloud-based API integrations — for enterprise clients. Also builds AI-powered
-conversational agents and knowledge-retrieval systems using Microsoft Copilot Studio, Azure AI Foundry, Azure AI Search, and GPT APIs
-with Retrieval-Augmented Generation (RAG). Automated business-critical workflows that cut manual effort by 60–90%, and mentors
-engineers within Agile teams.
-Work Experience
-Full Stack Developer Sep 2023 – Present
-Genpact, Bangalore, India
-• Delivered 18+ full-stack web applications — React/TypeScript front ends with Python (Azure Functions) backend services —
-improving productivity and user engagement across business teams.
-• Modernized the API integration layer by adopting Microsoft Graph API and standardizing authentication, cutting integration effort by
-35%.
-• Automated business-critical workflows (document generation, data pipelines, approvals) with Python and Power Automate, reducing
-manual effort by 60–90%.
-• Built AI-powered conversational agents using Copilot Studio, Azure AI Search, and GPT APIs, enabling secure, citation-based retrieval
-and cutting information lookup time by 70%.
-• Architected a reusable React + Fluent UI component library, cutting front-end delivery time by 40% team-wide.
-• Mentored 3 junior developers on full-stack engineering practices and Git workflows; led code reviews that reduced defects by 30–35%
-and accelerated Agile delivery by 25–30%.
-Projects
-Full-Stack Learning & Analytics Platform
-React, TypeScript, Python (Azure Functions), Power Automate, Power BI, Microsoft Graph API
-• Built a full-stack learning platform with automated Python (Azure Functions) pipelines for ingesting, transforming, and tracking data
-from multiple external sources.
-• Delivered a 13+ page React application handling 1,000+ user records, integrating enterprise data (SharePoint Lists via Graph API)
-with real-time completion tracking, scoring, and secure backend access (Managed Identity, Key Vault).
-• Built an AI-ready knowledge base powering a Copilot chatbot, cutting manual tracking effort by roughly 70%.
-Automated Workflow & Document Management App
-React, TypeScript, Microsoft Graph API, Power Automate
-• Built a full-stack workflow app automating document creation and approvals, with Outlook calendar integration auto-populating
-forms from event metadata.
-• Automated reminders and escalations, reducing documentation time by 60% and eliminating manual follow-ups.
-Automated Document Generation Engine (60-Page Contract Automation)
-React, TypeScript, Microsoft Graph API, Power Automate, MS Word API
-• Built a multi-step dynamic form with conditional logic, integrated with backend automation to generate 60-page formatted contracts
-from templates.
-• Implemented versioning, validation, and approval routing, cutting contract creation time by 90% (0.5–1 day → under 1 hour).
-AI Conversational Agent for Enterprise Knowledge Retrieval
-Copilot Studio, Azure AI Foundry, Azure AI Search, GPT API, Microsoft Entra ID, React
-• Built a secure, role-based conversational AI agent retrieving department-specific content via Entra ID access control and Azure AI
-Search.
-• Implemented multilingual query support with dynamic knowledge-source switching and GPT-powered, citation-backed responses,
-cutting research lookup time by 70%.
-Technical Skills
-Frontend: React.js, TypeScript, JavaScript, HTML5, CSS3, Fluent UI, Component-Driven Architecture
-Backend & APIs: Python, Azure Functions, REST API Design & Integration, Microsoft Graph API
-Databases & Storage: Azure Cosmos DB, Azure SQL Database, Azure Blob/Queue Storage
-AI & Generative AI: Microsoft Copilot Studio, Azure AI Foundry, Azure AI Search, GPT API, Bot Framework, RAG, Prompt Engineering
-Cloud & Security (Azure): Azure Functions, Managed Identity, Azure Key Vault, App Registrations, Microsoft Entra ID
-Automation & Data Platforms: Power Automate, Power Apps, Power BI, SharePoint Online (Lists/Libraries)
-Tools & Practices: Git, Agile/Scrum
-Education
-National Institute of Technology, Warangal — Master of Computer Application (MCA) 2020–2023
-Devi Ahilya Vishwavidyalaya, Indore — Bachelor of Computer Application (BCA) 2017–2020
+Contact
+jaydeeppatidar008@gmail.com
+www.linkedin.com/in/
+jaydeeppatidar (LinkedIn)
+Top Skills
+Generative AI
+Agentic AI Development
+Computer Vision
 Certifications
-• Microsoft Certified: Azure AI Apps and Agents Developer Associate (AI-103)
-• Microsoft Certified: Azure Developer Associate (AZ-204)
-• Microsoft Certified: Azure Fundamentals (AZ-900)
+Microsoft Certified: Azure Developer
+Associate
+Microsoft Certified: Azure AI Apps
+and Agents Developer Associate
+The Complete 2024 Web
+Development Bootcamp
+Microsoft Certified: Azure
+Fundamentals
+GitHub Copilot
+Jaydeep Patidar
+Microsoft 365 Developer @ Genpact | React, SPFx, SharePoint,
+Copilot Studio, Power Platform, Azure
+Indore, Madhya Pradesh, India
+Summary
+SharePoint Developer with 3 years of experience building scalable
+intranet solutions, workflow automation, document generation
+systems, and AI-powered productivity tools. Specialized in SPFx
+(React), Microsoft Graph, SharePoint Online, Power Automate,
+and Copilot Studio. Known for transforming manual processes
+into intelligent solutions that reduce effort by 60–90%, improve
+collaboration, and accelerate decision-making. Strong in front-end
+engineering, reusable UI frameworks, requirements analysis, and
+mentoring juniors within Agile delivery models.
+Experience
+Genpact
+Frontend & Microsoft 365 Developer 
+September 2023 - Present (3 years 2 months)
+Bengaluru, Karnataka, India
+CSEA NIT Warangal
+Executive Member
+September 2021 - September 2023 (2 years 1 month)
+India
+Education
+National Institute of Technology Warangal
+Master of Computer Applications - MCA, Computer Science · (2020 - 2023)
+Devi Ahilya Vishwavidyalaya
+Bachelor of Computer Application-BCA, Computer Science · (July 2017 - June
+2020)
+Page 1 of 1
